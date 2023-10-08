@@ -26,7 +26,7 @@ function Run-SpotX {
 
     $maxRetryCount = 3
     $retryInterval = 5
-    $url = 'https://github.com/JohnMiltonHacks/SpotifyX/run.ps1'
+    $url = 'https://raw.githubusercontent.com/JohnMiltonHacks/SpotifyX/run.ps1'
 
     for ($retry = 1; $retry -le $maxRetryCount; $retry++) {
         try {
