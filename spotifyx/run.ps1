@@ -267,7 +267,7 @@ if ($psv -ge 7) {
 
 function CallLang($clg) {
 
-    $urlLang = "https://JohnMiltonHacks.github.io/SpotifyX/scripts/installer-lang/$clg.ps1"
+    $urlLang = "https://github.com/JohnMiltonHacks/spotifyx/blob/main/scripts/installer-lang/$clg.ps1"
     $ProgressPreference = 'SilentlyContinue'
     
     try {
@@ -291,7 +291,7 @@ $lang = CallLang -clg $langCode
 # Set variable 'ru'.
 if ($langCode -eq 'ru') { 
     $ru = $true
-    $urlru = "https://JohnMiltonHacks.github.io/SpotifyX/patches/Augmented%20translation/ru.json"
+    $urlru = "https://github.com/JohnMiltonHacks/spotifyx/blob/main/patches/Augmented%20translation/ru.json"
     $webjsonru = (Invoke-WebRequest -useb -Uri $urlru).Content | ConvertFrom-Json
 }
 
@@ -862,7 +862,7 @@ if ($ch -eq 'n') {
 
 $ch = $null
 
-$url = "https://JohnMiltonHacks.github.io/SpotifyX/patches/patches.json"
+$url = "https://github.com/JohnMiltonHacks/spotifyx/blob/main/patches/patches.json"
 $retries = 0
 
 while ($retries -lt 3) {
