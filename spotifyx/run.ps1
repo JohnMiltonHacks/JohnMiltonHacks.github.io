@@ -5,6 +5,10 @@ param
     [Alias("v")]
     [string]$version,
 
+    [Parameter(HelpMessage = "Developer mode activation.")]
+    [Alias("dev")]
+    [switch]$devtools,
+
     [Parameter(HelpMessage = 'Hiding podcasts/episodes/audiobooks from homepage.')]
     [switch]$podcasts_off,
 
@@ -28,10 +32,12 @@ param
     [switch]$confirm_uninstall_ms_spoti,
     
     [Parameter(HelpMessage = 'Overwrite outdated or unsupported version of Spotify with the recommended version.')]
+    [Alias('sp-over')]
     [switch]$confirm_spoti_recomended_over,
     
     [Parameter(HelpMessage = 'Uninstall outdated or unsupported version of Spotify and install the recommended version.')]
-    [switch]$confirm_spoti_recomended_unistall,
+    [Alias('sp-uninstall')]
+    [switch]$confirm_spoti_recomended_uninstall,
     
     [Parameter(HelpMessage = 'Installation without ad blocking for premium accounts.')]
     [switch]$premium,
@@ -45,7 +51,7 @@ param
     [Parameter(HelpMessage = 'Do not hide the icon of collaborations in playlists.')]
     [switch]$hide_col_icon_off,
     
-    [Parameter(HelpMessage = 'disable new right sidebar.')]
+    [Parameter(HelpMessage = 'Disable new right sidebar.')]
     [switch]$rightsidebar_off,
 
     [Parameter(HelpMessage = 'Do not enable enhance playlist.')]
@@ -54,16 +60,19 @@ param
     [Parameter(HelpMessage = 'Do not enable enhance liked songs.')]
     [switch]$enhance_like_off,
 
-    [Parameter(HelpMessage = 'Disable smart shuffle in playlists.')]
-    [switch]$smartShuffle_off,
+    [Parameter(HelpMessage = 'Enable enhance playlist & liked songs.')]
+    [switch]$EnhanceSongs,
 
-    [Parameter(HelpMessage = 'enable funny progress bar.')]
+    [Parameter(HelpMessage = 'it`s killing the heart icon, you`re able to save and choose the destination for any song, playlist, or podcast')]
+    [switch]$Plus,
+
+    [Parameter(HelpMessage = 'Enable funny progress bar.')]
     [switch]$funnyprogressBar,
 
     [Parameter(HelpMessage = 'New theme activated (new right and left sidebar, some cover change)')]
     [switch]$new_theme,
 
-    [Parameter(HelpMessage = 'enable right sidebar coloring to match cover color)')]
+    [Parameter(HelpMessage = 'Enable right sidebar coloring to match cover color)')]
     [switch]$rightsidebarcolor,
     
     [Parameter(HelpMessage = 'Returns old lyrics')]
@@ -339,7 +348,7 @@ if (!($version -and $version -match $match_v)) {
     }
     else {  
         # Recommended version for Win 10-12
-        $onlineFull = "1.2.22.980.g8c845482-837" 
+        $onlineFull = "1.2.25.1011.g0348b2ea-701"
     }
 }
 else {
@@ -602,10 +611,10 @@ if ($spotifyInstalled) {
 
     # Old version Spotify
     if ($oldversion) {
-        if ($confirm_spoti_recomended_over -or $confirm_spoti_recomended_unistall) {
+        if ($confirm_spoti_recomended_over -or $confirm_spoti_recomended_uninstall) {
             Write-Host ($lang).OldV`n
         }
-        if (!($confirm_spoti_recomended_over) -and !($confirm_spoti_recomended_unistall)) {
+        if (!($confirm_spoti_recomended_over) -and !($confirm_spoti_recomended_uninstall)) {
             do {
                 Write-Host (($lang).OldV2 -f $offline, $online)
                 $ch = Read-Host -Prompt ($lang).OldV3
@@ -616,14 +625,14 @@ if ($spotifyInstalled) {
             }
             while ($ch -notmatch '^y$|^n$')
         }
-        if ($confirm_spoti_recomended_over -or $confirm_spoti_recomended_unistall) { 
+        if ($confirm_spoti_recomended_over -or $confirm_spoti_recomended_uninstall) { 
             $ch = 'y' 
             Write-Host ($lang).AutoUpd`n
         }
         if ($ch -eq 'y') { 
             $upgrade_client = $true 
 
-            if (!($confirm_spoti_recomended_over) -and !($confirm_spoti_recomended_unistall)) {
+            if (!($confirm_spoti_recomended_over) -and !($confirm_spoti_recomended_uninstall)) {
                 do {
                     $ch = Read-Host -Prompt (($lang).DelOrOver -f $offline)
                     Write-Host
@@ -633,7 +642,7 @@ if ($spotifyInstalled) {
                 }
                 while ($ch -notmatch '^y$|^n$')
             }
-            if ($confirm_spoti_recomended_unistall) { $ch = 'y' }
+            if ($confirm_spoti_recomended_uninstall) { $ch = 'y' }
             if ($confirm_spoti_recomended_over) { $ch = 'n' }
             if ($ch -eq 'y') {
                 Write-Host ($lang).DelOld`n 
@@ -684,10 +693,10 @@ if ($spotifyInstalled) {
             Write-Host "error description: "$Error[0]
         }
 
-        if ($confirm_spoti_recomended_over -or $confirm_spoti_recomended_unistall) {
+        if ($confirm_spoti_recomended_over -or $confirm_spoti_recomended_uninstall) {
             Write-Host ($lang).NewV`n
         }
-        if (!($confirm_spoti_recomended_over) -and !($confirm_spoti_recomended_unistall)) {
+        if (!($confirm_spoti_recomended_over) -and !($confirm_spoti_recomended_uninstall)) {
             do {
                 Write-Host (($lang).NewV2 -f $offline, $online)
                 $ch = Read-Host -Prompt (($lang).NewV3 -f $offline)
@@ -698,10 +707,10 @@ if ($spotifyInstalled) {
             }
             while ($ch -notmatch '^y$|^n$')
         }
-        if ($confirm_spoti_recomended_over -or $confirm_spoti_recomended_unistall) { $ch = 'n' }
+        if ($confirm_spoti_recomended_over -or $confirm_spoti_recomended_uninstall) { $ch = 'n' }
         if ($ch -eq 'y') { $upgrade_client = $false }
         if ($ch -eq 'n') {
-            if (!($confirm_spoti_recomended_over) -and !($confirm_spoti_recomended_unistall)) {
+            if (!($confirm_spoti_recomended_over) -and !($confirm_spoti_recomended_uninstall)) {
                 do {
                     $ch = Read-Host -Prompt (($lang).Recom -f $online)
                     Write-Host
@@ -711,14 +720,14 @@ if ($spotifyInstalled) {
                 }
                 while ($ch -notmatch '^y$|^n$')
             }
-            if ($confirm_spoti_recomended_over -or $confirm_spoti_recomended_unistall) { 
+            if ($confirm_spoti_recomended_over -or $confirm_spoti_recomended_uninstall) { 
                 $ch = 'y' 
                 Write-Host ($lang).AutoUpd`n
             }
             if ($ch -eq 'y') {
                 $upgrade_client = $true
                 $downgrading = $true
-                if (!($confirm_spoti_recomended_over) -and !($confirm_spoti_recomended_unistall)) {
+                if (!($confirm_spoti_recomended_over) -and !($confirm_spoti_recomended_uninstall)) {
                     do {
                         $ch = Read-Host -Prompt (($lang).DelOrOver -f $offline)
                         Write-Host
@@ -728,7 +737,7 @@ if ($spotifyInstalled) {
                     }
                     while ($ch -notmatch '^y$|^n$')
                 }
-                if ($confirm_spoti_recomended_unistall) { $ch = 'y' }
+                if ($confirm_spoti_recomended_uninstall) { $ch = 'y' }
                 if ($confirm_spoti_recomended_over) { $ch = 'n' }
                 if ($ch -eq 'y') {
                     Write-Host ($lang).DelNew`n
@@ -890,6 +899,43 @@ if ($retries -eq 3) {
 }
 function Helper($paramname) {
 
+
+    function Remove-Json {
+        param (
+            [Parameter(Mandatory = $true)]
+            [Alias("j")]
+            [PSObject]$Json,
+            
+            [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+            [Alias("p")]
+            [string[]]$Properties
+        )
+        
+        foreach ($Property in $Properties) {
+            $Json.psobject.properties.Remove($Property)
+        }
+    }
+    function Move-Json {
+        param (
+            [Parameter(Mandatory = $true)]
+            [Alias("t")]
+            [PSObject]$to,
+    
+            [Parameter(Mandatory = $true)]
+            [Alias("n")]
+            [string[]]$name,
+    
+            [Parameter(Mandatory = $true)]
+            [Alias("f")]
+            [PSObject]$from
+        )
+    
+        foreach ($propertyName in $name) {
+            $from | Add-Member -MemberType NoteProperty -Name $propertyName -Value $to.$propertyName
+            Remove-Json -j $to -p $propertyName
+        }
+    }
+
     switch ( $paramname ) {
         "HtmlLicMin" { 
             # licenses.html minification
@@ -1009,38 +1055,51 @@ function Helper($paramname) {
         "ForcedExp" {  
             # Forced disable some exp (xpui.js)
             $offline_patch = $offline -replace '(\d+\.\d+\.\d+)(.\d+)', '$1'
-            $remEnable = $webjson.others.EnableExp.psobject.properties  
-            $remCustom = $webjson.others.CustomExp.psobject.properties
+            $Enable = $webjson.others.EnableExp
+            $Disable = $webjson.others.DisableExp
+            $Custom = $webjson.others.CustomExp
 
-            if ($enhance_like_off) { $remEnable.remove('EnhanceLikedSongs') }
-            if ($enhance_playlist_off) { $remEnable.remove('EnhancePlaylist') }
-            # if ($smartShuffle_off) { $remEnable.remove('SmartShuffle') }
-            $remEnable.remove('SmartShuffle')
-            $remEnable.remove('RecentlyPlayedShortcut')
-            $remEnable.remove('EncoreCards')
-            if (!($funnyprogressBar)) { $remEnable.remove('HeBringsNpb') }
+            if ($enhance_like_off) { Remove-Json -j $Enable -p'EnhanceLikedSongs' }
+            if ($enhance_playlist_off) { Remove-Json -j $Enable -p 'EnhancePlaylist' }
+            
+            if ($EnhanceSongs) { 
+                Move-Json -n 'SmartShuffle' -t $Enable -f $Disable 
+            }
+            else { 
+             
+                if ([version]$offline -ge [version]'1.2.22.980') {
+                    Move-Json -n "EnhanceLikedSongs", "EnhancePlaylist"-t $Enable -f $Disable
+                }
+             
+            }
+
+            if (!($Plus)) {
+                Move-Json -n 'Plus' -t $Enable -f $Disable
+            }
+
+            Remove-Json -j $Enable -p "EncoreCards", "QueueOnRightPanel"
+
+            if (!($funnyprogressBar)) { Remove-Json -j $Enable -p "HeBringsNpb" }
+
             # Old theme
             if (!($new_theme) -and [version]$offline -le [version]"1.2.13.661") {
-                $LeftSidebar = $webjson.others.EnableExp.LeftSidebar
-                $RightSidebar = $webjson.others.EnableExp.RightSidebar
-                $webjson.others.DisableExp | Add-Member -MemberType NoteProperty -Name "LeftSidebar" -Value $LeftSidebar
-                $webjson.others.DisableExp | Add-Member -MemberType NoteProperty -Name "RightSidebar" -Value $RightSidebar
 
-                $remCustom.remove('NavAlt'), $remCustom.remove('NavAlt2'), $remEnable.remove('RightSidebarLyrics'), $remEnable.remove('RightSidebarCredits'), 
-                $remEnable.remove('RightSidebar'), $remEnable.remove('LeftSidebar'), $remEnable.remove('RightSidebarColors');
+                Move-Json -n 'RightSidebar', 'LeftSidebar' -t $Enable -f $Disable
+
+                Remove-Json -j $Custom -p "NavAlt", 'NavAlt2'
+                Remove-Json -j $Enable -p 'RightSidebarLyrics', 'RightSidebarCredits', 'RightSidebar', 'LeftSidebar', 'RightSidebarColors'
             }
             # New theme
             else {
-                if ($rightsidebar_off) { 
-                    $RightSidebar = $webjson.others.EnableExp.RightSidebar
-                    $webjson.others.DisableExp | Add-Member -MemberType NoteProperty -Name "RightSidebar" -Value $RightSidebar
+                if ($rightsidebar_off -and [version]$offline -lt [version]"1.2.24.756") { 
+                    Move-Json -n 'RightSidebar' -t $Enable -from $Disable
                 }
                 else {
-                    if (!($rightsidebarcolor)) { $remEnable.remove('RightSidebarColors') }
-                    if ($old_lyrics) { $remEnable.remove('RightSidebarLyrics') } 
+                    if (!($rightsidebarcolor)) { Remove-Json -j $Enable -p 'RightSidebarColors' }
+                    if ($old_lyrics) { Remove-Json -j $Enable -p 'RightSidebarLyrics' } 
                 }
             }
-            if (!$premium) { $remEnable.remove('RemoteDownloads') }
+            if (!$premium) { Remove-Json -j $Enable -p 'RemoteDownloads' }
 
             # Disable unimportant exp
             if ($exp_spotify) {
@@ -1064,7 +1123,7 @@ function Helper($paramname) {
 
             }
 
-            $Exp = ($webjson.others.EnableExp, $webjson.others.DisableExp, $webjson.others.CustomExp)
+            $Exp = ($Enable, $Disable, $Custom)
 
             foreach ($item in $Exp) {
                 $itemProperties = $item | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
@@ -1080,19 +1139,19 @@ function Helper($paramname) {
                 }
             }
 
-            $enableExp = $webjson.others.EnableExp
-            $disableExp = $webjson.others.DisableExp
-            $CustomExp = $webjson.others.CustomExp
+            $Enable = $webjson.others.EnableExp
+            $Disable = $webjson.others.DisableExp
+            $Custom = $webjson.others.CustomExp
 
-            $enableNames = foreach ($item in $enableExp.PSObject.Properties.Name) {
+            $enableNames = foreach ($item in $Enable.PSObject.Properties.Name) {
                 $webjson.others.EnableExp.$item.name
             }
 
-            $disableNames = foreach ($item in $disableExp.PSObject.Properties.Name) {
+            $disableNames = foreach ($item in $Disable.PSObject.Properties.Name) {
                 $webjson.others.DisableExp.$item.name
             }
 
-            $customNames = foreach ($item in $CustomExp.PSObject.Properties.Name) {
+            $customNames = foreach ($item in $Custom.PSObject.Properties.Name) {
                 $custname = $webjson.others.CustomExp.$item.name
                 $custvalue = $webjson.others.CustomExp.$item.value
 
@@ -1145,26 +1204,16 @@ function Helper($paramname) {
             $contents = $webjsonru.psobject.properties.name
             $json = $webjsonru
         }
-        "PodcastAd" { 
-            # Aodcast ad block
-            $name = "patches.json.others."
+        "Binary" { 
+
+            $binary = $webjson.others.binary
+
+            if ($block_update) { Remove-Json -j $binary -p 'BlockUpdate' }
+
+            $name = "patches.json.others.binary."
             $n = "Spotify.exe"
-            $contents = "podcast_ad_block"
-            $json = $webjson.others
-        }
-        "BannerHome" { 
-            # Remove banner on home page
-            $name = "patches.json.others."
-            $n = "home-hpto.js"
-            $contents = "BannerHome"
-            $json = $webjson.others
-        }
-        "BlockUpdate" { 
-            # Block Spotify client updates
-            $name = "patches.json.others."
-            $n = "Spotify.exe"
-            $contents = "block_update"
-            $json = $webjson.others
+            $contents = $webjson.others.binary.psobject.properties.name
+            $json = $webjson.others.binary
         }
         "Collaborators" { 
             # Hide Collaborators icon
@@ -1175,14 +1224,16 @@ function Helper($paramname) {
         }
         "VariousofXpui-js" { 
 
-            $rem = $webjson.VariousJs.psobject.properties  
+            $VarJs = $webjson.VariousJs
+
+            if (!($devtools)) {Remove-Json -j $VarJs -p "dev-tools"}
 
             if ($urlform_goofy -and $idbox_goofy) {
                 $webjson.VariousJs.goofyhistory.replace = "`$1 const urlForm=" + '"' + $urlform_goofy + '"' + ";const idBox=" + '"' + $idbox_goofy + '"' + $webjson.VariousJs.goofyhistory.replace
             }
-            else { $rem.remove('goofyhistory') }
+            else { Remove-Json -j $VarJs -p "goofyhistory" }
             
-            if (!($ru)) { $rem.remove('offrujs') }
+            if (!($ru)) { Remove-Json -j $VarJs -p "offrujs" }
 
             if (!($premium) -or ($cache_limit)) {
                 if (!($premium)) { 
@@ -1202,7 +1253,7 @@ function Helper($paramname) {
                 $repl = $webjson.VariousJs.product_state.replace
                 $webjson.VariousJs.product_state.replace = $repl -f "{pairs:{$adds}}"
             }
-            else { $rem.remove('product_state') }
+            else { Remove-Json -j $VarJs -p 'product_state' }
 
             $name = "patches.json.VariousJs."
             $n = "xpui.js"
@@ -1420,10 +1471,9 @@ If ($test_spa) {
         extract -counts 'one' -method 'zip' -name 'xpui.js' -helper 'OffadsonFullscreen'
     }
 
-    # Forced disable some exp
+    # Forced exp
     extract -counts 'one' -method 'zip' -name 'xpui.js' -helper 'ForcedExp' -add $webjson.others.byspotx.add
     
-    # Experimental Feature
     extract -counts 'one' -method 'zip' -name 'xpui.js' -helper 'VariousofXpui-js' 
 
     # Turn off podcasts
@@ -1440,14 +1490,10 @@ If ($test_spa) {
         extract -counts 'one' -method 'zip' -name $js -helper 'OffAdSections'
     }
 
-    # Remove banner on home page
-    extract -counts 'one' -method 'zip' -name 'home-hpto.js' -helper 'BannerHome'
-
     # Hide Collaborators icon
     if (!($hide_col_icon_off) -and !($exp_spotify)) {
         extract -counts 'one' -method 'zip' -name 'xpui-routes-playlist.js' -helper 'Collaborators'
     }
-
 
     # Static color for lyrics
     if ($lyrics_stat) {
@@ -1558,10 +1604,11 @@ If (!(Test-Path $start_menu)) {
 $ANSI = [Text.Encoding]::GetEncoding(1251)
 $old = [IO.File]::ReadAllText($spotifyExecutable, $ANSI)
 
-$rexex1 = $old -notmatch $webjson.others.block_update.add
-$rexex2 = $old -notmatch $webjson.others.podcast_ad_block.add
+$rexex1 = $old -notmatch $webjson.others.binary.block_update.add
+$rexex2 = $old -notmatch $webjson.others.binary.podcast_ad_block.add
+$rexex3 = $old -notmatch $webjson.others.binary.block_gabo.add
 
-if ($rexex1 -and $rexex2 ) {
+if ($rexex1 -and $rexex2 -and $rexex3) {
 
     if (Test-Path -LiteralPath $exe_bak) { 
         Remove-Item $exe_bak -Recurse -Force
@@ -1570,11 +1617,8 @@ if ($rexex1 -and $rexex2 ) {
     copy-Item $spotifyExecutable $exe_bak
 }
 
-# Podcast ad block
-extract -counts 'exe' -helper 'PodcastAd'
-
-# Block updates
-if ($block_update) { extract -counts 'exe' -helper 'BlockUpdate' }
+# Binary patch
+extract -counts 'exe' -helper 'Binary'
 
 # Start Spotify
 if ($start_spoti) { Start-Process -WorkingDirectory $spotifyDirectory -FilePath $spotifyExecutable }
